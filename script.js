@@ -184,6 +184,8 @@ window.addMember = function () {
   members.push({ id, name, team, status: "Không có mặt" });
   renderMembers();
 
+  db.ref("members").set(members);
+
   document.getElementById("new-id").value = "";
   document.getElementById("new-name").value = "";
   document.getElementById("new-team").value = "";
