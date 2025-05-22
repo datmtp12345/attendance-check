@@ -1,62 +1,202 @@
 <!DOCTYPE html>
 <html lang="vi">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0v3X_mE03EqefoTKnsY6yWRAs_b6Qf5k",
+    authDomain: "diemdanh-1d0ca.firebaseapp.com",
+    projectId: "diemdanh-1d0ca",
+    storageBucket: "diemdanh-1d0ca.firebasestorage.app",
+    messagingSenderId: "154072714351",
+    appId: "1:154072714351:web:04f88014f0c32e58c6119a",
+    measurementId: "G-M84JPBXGXC"
+  };
+
+  // Khởi tạo Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+
+  // Khởi tạo Realtime Database
+  const db = firebase.database();
+</script>
+
+  
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Điểm danh - THUNDERBOLT 08</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đăng nhập điểm danh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background-image: url("pictures/Doraemon.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-color: #000;
+      color: #1e1e1e;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      max-width: 400px;
+      margin: 80px auto;
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.208);
+      color: #2b2b2b;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.9rem;
+      color: #2a2a2a;
+      margin-bottom: 28px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      border: 1.6px solid #88b6ff;
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #1e1e1e;
+      margin-bottom: 16px;
+    }
+
+    input::placeholder {
+      color: #888;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+    }
+
+    #member-login-btn,
+    #admin-login-btn {
+      background-color: #2a5bd7;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    #member-login-btn:hover,
+    #admin-login-btn:hover {
+      background-color: #1e43b3;
+    }
+
+    #toggle-mode-btn {
+      background-color: #e3ecff;
+      color: #2a5bd7;
+      font-weight: 600;
+      border: 1px solid #b2cbff;
+      margin-bottom: 25px;
+    }
+
+    #toggle-mode-btn:hover {
+      background-color: #c7dcff;
+    }
+
+    #admin-panel {
+      border-top: 1px solid #d9e1ff;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+
+    #auto-status {
+      font-weight: 600;
+      color: #2b2b2b;
+      margin-top: 10px;
+    }
+
+    #change-code-btn,
+    #toggle-auto-btn,
+    #back-to-member-btn {
+      background-color: rgba(255, 255, 255, 0.3);
+      color: #1f1f1f;
+      border: 1px solid #a0b6ff;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    #change-code-btn:hover,
+    #toggle-auto-btn:hover,
+    #back-to-member-btn:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+      color: #000;
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>Danh sách điểm danh - THUNDERBOLT 08</h1>
-    <h2>Top 1 Luk Doraemon 😎</h2>
+    <h1>Đăng nhập điểm danh</h1>
 
-    <div class="admin-login">
-      <input type="email" id="admin-email" placeholder="Nhập email admin">
-      <button onclick="adminLogin()">🔐 Đăng nhập admin</button>
+    <button id="toggle-mode-btn">Chuyển sang chế độ Admin</button>
+
+    <!-- Thành viên -->
+    <div id="member-section">
+      <label for="code-input">Nhập mã đăng nhập:</label>
+      <input id="code-input" type="text" placeholder="Mã đăng nhập..." autocomplete="off" />
+      <button id="member-login-btn">Đăng nhập thành viên</button>
     </div>
 
-    <div id="admin-controls" style="display: none;">
-      <h2>➕ Thêm thành viên</h2>
-      <div class="add-member-form">
-        <input type="text" id="new-id" placeholder="Mã số">
-        <input type="text" id="new-name" placeholder="Họ tên">
-        <input type="number" id="new-team" placeholder="Nhóm">
-        <button onclick="addMember()">Thêm</button>
-        <button onclick="resetAttendance()">🧹 Reset điểm danh</button>
+    <!-- Admin -->
+    <div id="admin-section" style="display:none;">
+      <label for="admin-email">Email Admin:</label>
+      <input id="admin-email" type="email" placeholder="Nhập email admin..." autocomplete="off" />
+      <button id="admin-login-btn">Đăng nhập Admin</button>
+
+      <div id="admin-panel" style="display:none;">
+        <p>Mã đăng nhập hiện tại: <span id="current-code-display"></span></p>
+
+        <label for="new-code-input">Thay đổi mã thủ công:</label>
+        <input id="new-code-input" type="text" placeholder="Nhập mã mới..." autocomplete="off" />
+        <button id="change-code-btn">Cập nhật mã mới</button>
+
+        <button id="toggle-auto-btn">Dừng tự động đổi mã</button>
+        <p id="auto-status">Tự động đổi mã: <span id="auto-state">Đang chạy</span></p>
+
+        <button id="back-to-member-btn">Quay lại phần Thành viên</button>
       </div>
-    </div>
-
-    <div class="stats" id="member-stats"></div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Mã số</th>
-          <th>Họ tên</th>
-          <th>Nhóm</th>
-          <th>Trạng thái</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody id="member-list"></tbody>
-    </table>
-
-    <div class="history-toggle" onclick="toggleHistory()">📜 Xem lịch sử điểm danh</div>
-    <div id="history-container" style="display: none;">
-      <table>
-        <thead>
-          <tr>
-            <th>Ngày</th>
-            <th>Số lượt</th>
-            <th>Tải về</th>
-          </tr>
-        </thead>
-        <tbody id="history-list"></tbody>
-      </table>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Gắn file JS -->
+  <script src="main.js"></script>
 </body>
+
 </html>

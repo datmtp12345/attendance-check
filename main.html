@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<script type="module" src="main.js"></script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0v3X_mE03EqefoTKnsY6yWRAs_b6Qf5k",
+    authDomain: "diemdanh-1d0ca.firebaseapp.com",
+    projectId: "diemdanh-1d0ca",
+    storageBucket: "diemdanh-1d0ca.firebasestorage.app",
+    messagingSenderId: "154072714351",
+    appId: "1:154072714351:web:04f88014f0c32e58c6119a",
+    measurementId: "G-M84JPBXGXC"
+  };
+
+  // Khởi tạo Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+
+  // Khởi tạo Realtime Database
+  const db = firebase.database();
+</script>
+
+
+<script>
+  // Thời gian tính bằng mili giây (10 phút)
+  const AUTO_LOGOUT_TIME = 10 * 60 * 1000;
+
+  // Hàm đăng xuất
+  function autoLogout() {
+    alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+    localStorage.removeItem("loggedIn"); // Xóa trạng thái đăng nhập nếu có
+    window.location.href = "index.html"; // Chuyển về trang đăng nhập
+  }
+
+  // Bắt đầu đếm thời gian tự động đăng xuất
+  setTimeout(autoLogout, AUTO_LOGOUT_TIME);
+</script>
+
+<script>
+  if (localStorage.getItem("loggedIn") !== "member") {
+    window.location.href = "index.html";
+  }
+</script>
+
+
+
+
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Điểm danh - THUNDERBOLT 08</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>Danh sách điểm danh - THUNDERBOLT 08</h1>
+    <h2>Top 1 Luk Doraemon 😎</h2>
+
+    <div class="admin-login">
+      <input type="email" id="admin-email" placeholder="Nhập email admin">
+      <button onclick="adminLogin()">🔐 Đăng nhập admin</button>
+    </div>
+
+    <div id="admin-controls" style="display: none;">
+      <h2>➕ Thêm thành viên</h2>
+      <div class="add-member-form">
+        <input type="text" id="new-id" placeholder="Mã số">
+        <input type="text" id="new-name" placeholder="Họ tên">
+        <input type="number" id="new-team" placeholder="Nhóm">
+        <button onclick="addMember()">Thêm</button>
+        <button onclick="resetAttendance()">🧹 Reset điểm danh</button>
+      </div>
+    </div>
+
+    <div class="stats" id="member-stats"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Mã số</th>
+          <th>Họ tên</th>
+          <th>Nhóm</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="member-list"></tbody>
+    </table>
+
+    <div class="history-toggle" onclick="toggleHistory()">📜 Xem lịch sử điểm danh</div>
+    <div id="history-container" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày</th>
+            <th>Số lượt</th>
+            <th>Tải về</th>
+          </tr>
+        </thead>
+        <tbody id="history-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

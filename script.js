@@ -1,6 +1,5 @@
-let storedMembers = JSON.parse(localStorage.getItem("members"));
-const members = storedMembers || [
-    { id: "HE204906", name: "Trần Tuấn Anh", team: 4, status: "Không có mặt" },
+const defaultMembers = [
+  { id: "HE204906", name: "Trần Tuấn Anh", team: 4, status: "Không có mặt" },
   { id: "HS200273", name: "Nguyễn Đức Anh", team: 4, status: "Không có mặt" },
   { id: "HE201437", name: "Lê Quốc Đạt", team: 1, status: "Không có mặt" },
   { id: "HE205151", name: "Trần Khắc Đạt", team: 3, status: "Không có mặt" },
@@ -31,6 +30,27 @@ const members = storedMembers || [
   { id: "HE200074", name: "Nguyễn Đức Minh", team: 1, status: "Không có mặt" }
 ];
 
+// declare the variable in outer scope
+let members;
+
+function loadMembers() {
+  return db
+    .ref("members")
+    .once("value")
+    .then((snap) => {
+      const stored = snap.exists() ? snap.val() : null;
+      return stored || defaultMembers;
+    });
+}
+
+loadMembers().then((members) => {
+  console.log("Members ready:", members);
+  // if you want, write default back to DB/localStorage:
+  if (!Array.isArray(members) || members === defaultMembers) {
+    db.ref("members").set(defaultMembers);
+  }
+});
+
 let isAdmin = false;
 let attendanceHistory = JSON.parse(localStorage.getItem("attendanceHistory")) || [];
 
@@ -40,12 +60,14 @@ function getCurrentDate() {
 
 function renderMembers() {
   const memberList = document.getElementById("member-list");
-  const stats = document.getElementById("member-stats");
+  const stats       = document.getElementById("member-stats");
   memberList.innerHTML = "";
+
+  const sortedMembers = members.slice().sort((a, b) => a.team - b.team);
 
   let presentCount = 0;
 
-  members.forEach(member => {
+  sortedMembers.forEach(member => {
     if (member.status === "Có mặt") presentCount++;
 
     const row = document.createElement("tr");
@@ -54,16 +76,26 @@ function renderMembers() {
       <td>${member.name}</td>
       <td>${member.team}</td>
       <td>
-        <button id="btn-${member.id}" class="button ${member.status === "Có mặt" ? "present" : "absent"}"
-          onclick="markAttendance('${member.id}')">${member.status}</button>
+        <button id="btn-${member.id}"
+                class="button ${member.status === "Có mặt" ? "present" : "absent"}"
+                onclick="markAttendance('${member.id}')">
+          ${member.status}
+        </button>
       </td>
-      <td>${isAdmin ? `<button class="button remove" onclick="removeMember('${member.id}')">Xóa</button>` : ""}</td>
+      <td>
+        ${isAdmin
+          ? `<button class="button remove"
+                     onclick="removeMember('${member.id}')">Xóa</button>`
+          : ""}
+      </td>
     `;
     memberList.appendChild(row);
   });
 
-  stats.textContent = `Tổng thành viên: ${members.length} | Đã điểm danh: ${presentCount}`;
+  stats.textContent = 
+    `Tổng thành viên: ${members.length} | Đã điểm danh: ${presentCount}`;
 }
+
 
 window.adminLogin = function () {
   const email = document.getElementById("admin-email").value;
@@ -86,11 +118,10 @@ window.markAttendance = function (id) {
   }
 
   member.status = "Có mặt";
+  db.ref("members").set(members);
   attendanceHistory.push({ id: member.id, name: member.name, date: getCurrentDate() });
 
   localStorage.setItem("attendanceHistory", JSON.stringify(attendanceHistory));
-  localStorage.setItem("members", JSON.stringify(members));
-
   renderMembers();
 };
 
@@ -151,7 +182,6 @@ window.addMember = function () {
   }
 
   members.push({ id, name, team, status: "Không có mặt" });
-  localStorage.setItem("members", JSON.stringify(members));
   renderMembers();
 
   document.getElementById("new-id").value = "";
@@ -164,7 +194,7 @@ window.removeMember = function (id) {
   const index = members.findIndex(m => m.id === id);
   if (index !== -1) {
     members.splice(index, 1);
-    localStorage.setItem("members", JSON.stringify(members));
+    db.ref("members").set(members);
     renderMembers();
   }
 };
@@ -174,9 +204,24 @@ window.resetAttendance = function () {
 
   members.forEach(m => m.status = "Không có mặt");
   attendanceHistory = [];
-  localStorage.setItem("members", JSON.stringify(members));
   localStorage.removeItem("attendanceHistory");
+  db.ref("members").set(members);
   renderMembers();
 };
+
+
+// mớimới
+if (!localStorage.getItem("loggedIn")) {
+  window.location.href = "index.html";
+}
+// Ghi lên Firebase
+// Lắng nghe thay đổi
+db.ref("members").on("value", snapshot => {
+  const data = snapshot.val();
+  if (data) {
+    members = data;
+    renderMembers(); // Gọi lại hàm hiển thị
+  }
+});
 
 renderMembers();
