@@ -114,7 +114,7 @@ th, td {
 
 
 body {
-  background-image: url("images/Doraemon.jpg");
+  background-image: url("pictures/Doraemon.jpg");
   background-size: cover;       /* ảnh phủ đầy màn hình */
   background-position: center;  /* căn giữa ảnh */
   background-repeat: no-repeat; /* không lặp lại ảnh */
