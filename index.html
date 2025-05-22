@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Điểm danh - THUNDERBOLT 08</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Danh sách điểm danh - THUNDERBOLT 08</h1>
+    <h2>Top 1 Luk Doraemon 😎</h2>
+
+    <div class="admin-login">
+      <input type="email" id="admin-email" placeholder="Nhập email admin">
+      <button onclick="adminLogin()">🔐 Đăng nhập admin</button>
+    </div>
+
+    <div id="admin-controls" style="display: none;">
+      <h2>➕ Thêm thành viên</h2>
+      <div class="add-member-form">
+        <input type="text" id="new-id" placeholder="Mã số">
+        <input type="text" id="new-name" placeholder="Họ tên">
+        <input type="number" id="new-team" placeholder="Nhóm">
+        <button onclick="addMember()">Thêm</button>
+        <button onclick="resetAttendance()">🧹 Reset điểm danh</button>
+      </div>
+    </div>
+
+    <div class="stats" id="member-stats"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Mã số</th>
+          <th>Họ tên</th>
+          <th>Nhóm</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="member-list"></tbody>
+    </table>
+
+    <div class="history-toggle" onclick="toggleHistory()">📜 Xem lịch sử điểm danh</div>
+    <div id="history-container" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày</th>
+            <th>Số lượt</th>
+            <th>Tải về</th>
+          </tr>
+        </thead>
+        <tbody id="history-list"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
