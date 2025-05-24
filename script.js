@@ -1,33 +1,177 @@
-const defaultMembers = [
-  { id: "HE204906", name: "Trần Tuấn Anh", team: 4, status: "Không có mặt" },
-  { id: "HS200273", name: "Nguyễn Đức Anh", team: 4, status: "Không có mặt" },
-  { id: "HE201437", name: "Lê Quốc Đạt", team: 1, status: "Không có mặt" },
-  { id: "HE205151", name: "Trần Khắc Đạt", team: 3, status: "Không có mặt" },
-  { id: "HS204475", name: "Lê Đắc Tuấn Anh", team: 2, status: "Không có mặt" },
-  { id: "HE204315", name: "Cao Văn Đạt", team: 3, status: "Không có mặt" },
-  { id: "HE201118", name: "Lê Quang Đức", team: 1, status: "Không có mặt" },
-  { id: "HE201209", name: "Phạm Đan Dương", team: 4, status: "Không có mặt" },
-  { id: "HS204176", name: "Trần Thị Kim Hiền", team: 3, status: "Không có mặt" },
-  { id: "HE204902", name: "Bùi Trung Hiếu", team: 4, status: "Không có mặt" },
-  { id: "HE204638", name: "Hà Huy Hoàng", team: 2, status: "Không có mặt" },
-  { id: "HS200507", name: "Trần Thị Thu Hồng", team: 4, status: "Không có mặt" },
-  { id: "HE204019", name: "Nguyễn Phú Hoàng", team: 2, status: "Không có mặt" },
-  { id: "HS204445", name: "Phạm Thị Hương", team: 2, status: "Không có mặt" },
-  { id: "HS204216", name: "Đỗ Minh Khiêm", team: 1, status: "Không có mặt" },
-  { id: "HS200347", name: "Đỗ Thị Thuỳ Linh", team: 2, status: "Không có mặt" },
-  { id: "HE201320", name: "Nguyễn Phước Lộc", team: 4, status: "Không có mặt" },
-  { id: "HA204002", name: "Phan Vũ Đức Lương", team: 4, status: "Không có mặt" },
-  { id: "HS200817", name: "Nguyễn Thị Xuân Mai", team: 1, status: "Không có mặt" },
-  { id: "HE201302", name: "Đào Bùi Bảo Ngọc", team: 2, status: "Không có mặt" },
-  { id: "HE201048", name: "Bùi Xuân Quang", team: 1, status: "Không có mặt" },
-  { id: "HE201896", name: "Nguyễn Hoàng Tú Nhi", team: 3, status: "Không có mặt" },
-  { id: "HE201295", name: "Nguyễn Đức Quang", team: 2, status: "Không có mặt" },
-  { id: "HS204031", name: "Bùi Thảo Quyên", team: 3, status: "Không có mặt" },
-  { id: "HS204246", name: "Phan Hồng Quyên", team: 3, status: "Không có mặt" },
-  { id: "HS200200", name: "Đặng Kỳ Thư", team: 1, status: "Không có mặt" },
-  { id: "HE204651", name: "Lê Công Tuyển", team: 3, status: "Không có mặt" },
-  { id: "HS200854", name: "Nguyễn Ngọc Ly Vân", team: 3, status: "Không có mặt" },
-  { id: "HE200074", name: "Nguyễn Đức Minh", team: 1, status: "Không có mặt" }
+const defaultMembers = [{
+    id: "HE204906",
+    name: "Trần Tuấn Anh",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS200273",
+    name: "Nguyễn Đức Anh",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201437",
+    name: "Lê Quốc Đạt",
+    team: 1,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE205151",
+    name: "Trần Khắc Đạt",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS204475",
+    name: "Lê Đắc Tuấn Anh",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE204315",
+    name: "Cao Văn Đạt",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201118",
+    name: "Lê Quang Đức",
+    team: 1,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201209",
+    name: "Phạm Đan Dương",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS204176",
+    name: "Trần Thị Kim Hiền",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE204902",
+    name: "Bùi Trung Hiếu",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE204638",
+    name: "Hà Huy Hoàng",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS200507",
+    name: "Trần Thị Thu Hồng",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE204019",
+    name: "Nguyễn Phú Hoàng",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS204445",
+    name: "Phạm Thị Hương",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS204216",
+    name: "Đỗ Minh Khiêm",
+    team: 1,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS200347",
+    name: "Đỗ Thị Thuỳ Linh",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201320",
+    name: "Nguyễn Phước Lộc",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HA204002",
+    name: "Phan Vũ Đức Lương",
+    team: 4,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS200817",
+    name: "Nguyễn Thị Xuân Mai",
+    team: 1,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201302",
+    name: "Đào Bùi Bảo Ngọc",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201048",
+    name: "Bùi Xuân Quang",
+    team: 1,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201896",
+    name: "Nguyễn Hoàng Tú Nhi",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE201295",
+    name: "Nguyễn Đức Quang",
+    team: 2,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS204031",
+    name: "Bùi Thảo Quyên",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS204246",
+    name: "Phan Hồng Quyên",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS200200",
+    name: "Đặng Kỳ Thư",
+    team: 1,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE204651",
+    name: "Lê Công Tuyển",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HS200854",
+    name: "Nguyễn Ngọc Ly Vân",
+    team: 3,
+    status: "Không có mặt"
+  },
+  {
+    id: "HE200074",
+    name: "Nguyễn Đức Minh",
+    team: 1,
+    status: "Không có mặt"
+  }
 ];
 
 // declare the variable in outer scope
@@ -60,7 +204,7 @@ function getCurrentDate() {
 
 function renderMembers() {
   const memberList = document.getElementById("member-list");
-  const stats       = document.getElementById("member-stats");
+  const stats = document.getElementById("member-stats");
   memberList.innerHTML = "";
 
   const sortedMembers = members.slice().sort((a, b) => a.team - b.team);
@@ -92,15 +236,14 @@ function renderMembers() {
     memberList.appendChild(row);
   });
 
-  stats.textContent = 
+  stats.textContent =
     `Tổng thành viên: ${members.length} | Đã điểm danh: ${presentCount}`;
 }
 
 
 window.adminLogin = function () {
   const email = document.getElementById("admin-email").value;
-  if (email === "datmtp12345@gmail.com") 
-    {
+  if (email === "datmtp12345@gmail.com") {
     isAdmin = true;
     document.querySelector(".admin-login").style.display = "none";
     document.getElementById("admin-controls").style.display = "block";
@@ -119,7 +262,11 @@ window.markAttendance = function (id) {
 
   member.status = "Có mặt";
   db.ref("members").set(members);
-  attendanceHistory.push({ id: member.id, name: member.name, date: getCurrentDate() });
+  attendanceHistory.push({
+    id: member.id,
+    name: member.name,
+    date: getCurrentDate()
+  });
 
   localStorage.setItem("attendanceHistory", JSON.stringify(attendanceHistory));
   renderMembers();
@@ -159,7 +306,9 @@ window.exportHistory = function (date) {
     content += `${e.id}, ${e.name}\n`;
   });
 
-  const blob = new Blob([content], { type: "text/plain" });
+  const blob = new Blob([content], {
+    type: "text/plain"
+  });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `diem_danh_${date}.txt`;
@@ -181,7 +330,12 @@ window.addMember = function () {
     return;
   }
 
-  members.push({ id, name, team, status: "Không có mặt" });
+  members.push({
+    id,
+    name,
+    team,
+    status: "Không có mặt"
+  });
   renderMembers();
 
   db.ref("members").set(members);
@@ -210,6 +364,113 @@ window.resetAttendance = function () {
   db.ref("members").set(members);
   renderMembers();
 };
+
+
+
+/// aura
+
+const musicList = [
+  "musics/bà sáu bán xôi.mp3",
+  "musics/mà tà cu.mp3",
+  "musics/ui ia.mp3"
+];
+
+function getRandomMusic() {
+  const index = Math.floor(Math.random() * musicList.length);
+  return musicList[index];
+}
+
+function checkPassword() {
+  const input = document.getElementById("passwordInput").value;
+  if (input === "anhdatdepzai") {
+    document.getElementById("authSection").style.display = "none";
+    const button = document.getElementById("musicButton");
+    button.style.display = "inline-block";
+    button.classList.add("show");
+
+    const music = document.getElementById("musicPlayer");
+    music.src = getRandomMusic();
+  } else {
+    alert("Sai mã! Thử lại.");
+  }
+}
+
+let flashIntervalId = null;
+const body = document.body;
+const images = [
+  "pictures/do1.jpg",
+  "pictures/do2.jpg",
+  "pictures/do3.jpg",
+  "pictures/do4.jpg",
+  "pictures/do5.jpg",
+  "pictures/do6.jpg",
+  "pictures/do7.jpg"
+];
+let imgIndex = 0;
+
+function flashBackground() {
+  // Bật hiệu ứng rung + nháy sáng
+  body.style.animation = "shake 0.25s infinite, flashBrightness 0.5s infinite";
+
+  flashIntervalId = setInterval(() => {
+    body.style.backgroundImage = `url(${images[imgIndex]})`;
+    imgIndex = (imgIndex + 1) % images.length;
+  }, 500);
+}
+
+function stopFlashBackground() {
+  if (flashIntervalId) {
+    clearInterval(flashIntervalId);
+    flashIntervalId = null;
+  }
+  body.style.animation = ""; // Tắt hiệu ứng
+}
+
+function resetBackground() {
+  body.style.backgroundImage = "url('pictures/Doraemon2.jpg')";
+}
+
+function toggleMusic() {
+  const music = document.getElementById("musicPlayer");
+  if (music.paused) {
+    music.play();
+    flashBackground();
+  } else {
+    music.pause();
+    music.currentTime = 0;
+    stopFlashBackground();
+    resetBackground();
+  }
+}
+// kết auraaura
+
+
+//text h2 chay
+const texts = [
+  "Top 1 Luk Doraemon 😎",
+  "Winning an debate is easy 🥲",
+  "Đừng Thoát Luk 😏 ",
+  "Đạt Đẹp Trai Là Thật 😘",
+  "Bạn sợ MB 😥",
+  "Cười nhiều vào 🤣"
+];
+
+function changeText() {
+  const h2 = document.getElementById('randomText');
+  let newText;
+  do {
+    newText = texts[Math.floor(Math.random() * texts.length)];
+  } while (newText === h2.textContent); // tránh trùng văn bản
+  h2.style.opacity = 0;
+  setTimeout(() => {
+    h2.textContent = newText;
+    h2.style.opacity = 1;
+  }, 300);
+}
+
+// Tự động đổi mỗi 5 giây
+setInterval(changeText, 5000);
+
 
 
 // mớimới

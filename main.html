@@ -62,13 +62,22 @@
 
 <body>
   <div class="container">
-    <h1>Danh sách điểm danh - THUNDERBOLT 08</h1>
-    <h2>Top 1 Luk Doraemon 😎</h2>
-
-    <div class="admin-login">
+    <h1>THUNDERBOLT 08</h1>
+    <h2 id="randomText">Page yêu dấu</h2>
+    <div class="admin-login flex-container">
       <input type="email" id="admin-email" placeholder="Nhập email admin">
       <button onclick="adminLogin()">🔐 Đăng nhập admin</button>
+
+      <div id="authSection">
+        <input type="password" id="passwordInput" placeholder="Nhập mã">
+        <button onclick="checkPassword()">Xác nhận</button>
+      </div>
+
+      <button id="musicButton" style="display: none;" onclick="toggleMusic()">Bật/Tắt nhạc</button>
+      <audio id="musicPlayer"></audio> <!-- KHÔNG gắn sẵn src -->
+
     </div>
+
 
     <div id="admin-controls" style="display: none;">
       <h2>➕ Thêm thành viên</h2>
