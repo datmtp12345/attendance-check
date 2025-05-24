@@ -449,7 +449,7 @@ function toggleMusic() {
 const texts = [
   "Top 1 Luk Doraemon 😎",
   "Winning an debate is easy 🥲",
-  "Đừng Thoát Luk 😏 ",
+  "Thoát Luk 😏 ",
   "Đạt Đẹp Trai Là Thật 😘",
   "Bạn sợ MB 😥",
   "Cười nhiều vào 🤣"
