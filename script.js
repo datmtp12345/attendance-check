@@ -174,8 +174,13 @@ const defaultMembers = [{
   }
 ];
 
-// declare the variable in outer scope
-let members;
+let members = [];
+let isAdmin = false;
+let attendanceHistory = JSON.parse(localStorage.getItem("attendanceHistory")) || [];
+
+function getCurrentDate() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 function loadMembers() {
   return db
@@ -187,32 +192,20 @@ function loadMembers() {
     });
 }
 
-loadMembers().then((members) => {
-  console.log("Members ready:", members);
-  // if you want, write default back to DB/localStorage:
-  if (!Array.isArray(members) || members === defaultMembers) {
-    db.ref("members").set(defaultMembers);
-  }
-});
-
-let isAdmin = false;
-let attendanceHistory = JSON.parse(localStorage.getItem("attendanceHistory")) || [];
-
-function getCurrentDate() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function renderMembers() {
   const memberList = document.getElementById("member-list");
   const stats = document.getElementById("member-stats");
+  if (!members) return;
+
   memberList.innerHTML = "";
 
   const sortedMembers = members.slice().sort((a, b) => a.team - b.team);
-
   let presentCount = 0;
-
   sortedMembers.forEach(member => {
     if (member.status === "Có mặt") presentCount++;
+    let statusClass = "absent";
+    if (member.status === "Có mặt") statusClass = "present";
+    else if (member.status === "Đi muộn") statusClass = "late";
 
     const row = document.createElement("tr");
     row.innerHTML = `
@@ -221,98 +214,47 @@ function renderMembers() {
       <td>${member.team}</td>
       <td>
         <button id="btn-${member.id}"
-                class="button ${member.status === "Có mặt" ? "present" : "absent"}"
-                onclick="markAttendance('${member.id}')">
+                class="button ${statusClass}"
+                onclick="toggleAttendance('${member.id}')">
           ${member.status}
         </button>
       </td>
       <td>
-        ${isAdmin
-          ? `<button class="button remove"
-                     onclick="removeMember('${member.id}')">Xóa</button>`
-          : ""}
+        ${isAdmin ? `<button class="button remove" onclick="removeMember('${member.id}')">Xóa</button>` : ""}
       </td>
     `;
     memberList.appendChild(row);
   });
 
-  stats.textContent =
-    `Tổng thành viên: ${members.length} | Đã điểm danh: ${presentCount}`;
+  stats.textContent = `Tổng thành viên: ${members.length} | Đã điểm danh: ${presentCount}`;
 }
 
-
-window.adminLogin = function () {
-  const email = document.getElementById("admin-email").value;
-  if (email === "datmtp12345@gmail.com") {
-    isAdmin = true;
-    document.querySelector(".admin-login").style.display = "none";
-    document.getElementById("admin-controls").style.display = "block";
-    renderMembers();
-  } else {
-    alert("Bạn không có quyền truy cập!");
-  }
-};
-
-window.markAttendance = function (id) {
+window.toggleAttendance = function (id) {
   const member = members.find(m => m.id === id);
-  if (attendanceHistory.some(entry => entry.id === id && entry.date === getCurrentDate())) {
-    alert("Bạn đã điểm danh rồi!");
-    return;
-  }
+  if (!member) return;
 
-  member.status = "Có mặt";
-  db.ref("members").set(members);
-  attendanceHistory.push({
-    id: member.id,
-    name: member.name,
-    date: getCurrentDate()
-  });
+  if (!isAdmin) {
+    if (attendanceHistory.some(entry => entry.id === id && entry.date === getCurrentDate())) {
+      alert("Bạn đã điểm danh rồi!");
+      return;
+    }
+    member.status = "Có mặt";
+    attendanceHistory.push({ id: member.id, name: member.name, date: getCurrentDate(), status: "Có mặt" });
+  } else {
+    const currentStatus = member.status;
+    const nextStatus = currentStatus === "Không có mặt" ? "Có mặt"
+                      : currentStatus === "Có mặt" ? "Đi muộn"
+                      : "Không có mặt";
+    member.status = nextStatus;
+    // Xóa bản ghi cũ trong cùng ngày
+    attendanceHistory = attendanceHistory.filter(entry => !(entry.id === member.id && entry.date === getCurrentDate()));
+    // Ghi bản ghi mới
+    attendanceHistory.push({ id: member.id, name: member.name, date: getCurrentDate(), status: nextStatus });
+  }
 
   localStorage.setItem("attendanceHistory", JSON.stringify(attendanceHistory));
+  db.ref("members").set(members);
   renderMembers();
-};
-
-window.toggleHistory = function () {
-  const historyContainer = document.getElementById("history-container");
-  historyContainer.style.display = historyContainer.style.display === "none" ? "block" : "none";
-  renderHistory();
-};
-
-window.renderHistory = function () {
-  const historyList = document.getElementById("history-list");
-  historyList.innerHTML = "";
-
-  const grouped = {};
-  attendanceHistory.forEach(entry => {
-    if (!grouped[entry.date]) grouped[entry.date] = [];
-    grouped[entry.date].push(entry);
-  });
-
-  Object.keys(grouped).forEach(date => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${date}</td>
-      <td>${grouped[date].length}</td>
-      <td><button onclick="exportHistory('${date}')">Tải về</button></td>
-    `;
-    historyList.appendChild(row);
-  });
-};
-
-window.exportHistory = function (date) {
-  const filtered = attendanceHistory.filter(e => e.date === date);
-  let content = `Lịch sử điểm danh - Ngày: ${date}\n`;
-  filtered.forEach(e => {
-    content += `${e.id}, ${e.name}\n`;
-  });
-
-  const blob = new Blob([content], {
-    type: "text/plain"
-  });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `diem_danh_${date}.txt`;
-  a.click();
 };
 
 window.addMember = function () {
@@ -330,16 +272,9 @@ window.addMember = function () {
     return;
   }
 
-  members.push({
-    id,
-    name,
-    team,
-    status: "Không có mặt"
-  });
-  renderMembers();
-
+  members.push({ id, name, team, status: "Không có mặt" });
   db.ref("members").set(members);
-
+  renderMembers();
   document.getElementById("new-id").value = "";
   document.getElementById("new-name").value = "";
   document.getElementById("new-team").value = "";
@@ -357,7 +292,6 @@ window.removeMember = function (id) {
 
 window.resetAttendance = function () {
   if (!isAdmin) return;
-
   members.forEach(m => m.status = "Không có mặt");
   attendanceHistory = [];
   localStorage.removeItem("attendanceHistory");
@@ -365,10 +299,90 @@ window.resetAttendance = function () {
   renderMembers();
 };
 
+window.adminLogin = function () {
+  const email = document.getElementById("admin-email").value.trim();
+  if (email === "datmtp12345@gmail.com") {
+    isAdmin = true;
+    document.querySelector(".admin-login").style.display = "none";
+    document.getElementById("admin-controls").style.display = "block";
+    renderMembers();
+  } else {
+    alert("Bạn không có quyền truy cập!");
+  }
+};
+
+window.renderHistory = function () {
+  const historyContainer = document.getElementById("history-container");
+  const historyList = document.getElementById("history-list");
+
+  if (historyContainer.style.display === "none" || historyContainer.style.display === "") {
+    historyContainer.style.display = "block";
+    historyList.innerHTML = "";
+    const grouped = {};
+    attendanceHistory.forEach(entry => {
+      if (!grouped[entry.date]) grouped[entry.date] = [];
+      grouped[entry.date].push(entry);
+    });
+    Object.keys(grouped).forEach(date => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${date}</td>
+        <td>${grouped[date].length}</td>
+        <td><button onclick="exportHistory('${date}')">Tải về</button></td>
+      `;
+      historyList.appendChild(row);
+    });
+  } else {
+    historyContainer.style.display = "none";
+  }
+};
+
+window.exportHistory = function (date) {
+  const filtered = attendanceHistory.filter(e => e.date === date);
+  let present = 0, late = 0, absent = 0;
+  const contentLines = [`Lịch sử điểm danh - Ngày: ${date}`, "STT, ID, Họ tên, Trạng thái"];
+  const latestStatusMap = {};
+
+  // Chỉ lấy bản ghi cuối cùng trong ngày của mỗi ID
+  filtered.forEach(e => latestStatusMap[e.id] = e);
+
+  const latestEntries = Object.values(latestStatusMap);
+  latestEntries.forEach((e, idx) => {
+    contentLines.push(`${idx + 1}, ${e.id}, ${e.name}, ${e.status}`);
+    if (e.status === "Có mặt") present++;
+    else if (e.status === "Đi muộn") late++;
+  });
+  absent = members.length - present - late;
+  contentLines.push("");
+  contentLines.push(`Tổng số: ${members.length}`);
+  contentLines.push(`Có mặt: ${present}`);
+  contentLines.push(`Đi muộn: ${late}`);
+  contentLines.push(`Vắng mặt: ${absent}`);
+  const blob = new Blob([contentLines.join("\n")], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `diem_danh_${date}.txt`;
+  a.click();
+};
+
+loadMembers().then((loadedMembers) => {
+  members = loadedMembers;
+  renderMembers();
+  if (!Array.isArray(members) || members === defaultMembers) {
+    db.ref("members").set(defaultMembers);
+  }
+});
+
+db.ref("members").on("value", snapshot => {
+  const data = snapshot.val();
+  if (data) {
+    members = data;
+    renderMembers();
+  }
+});
 
 
-/// aura
-
+//âuraâura
 const musicList = [
   "musics/bà sáu bán xôi.mp3",
   "musics/mà tà cu.mp3",
@@ -474,17 +488,3 @@ setInterval(changeText, 5000);
 
 
 // mớimới
-if (!localStorage.getItem("loggedIn")) {
-  window.location.href = "index.html";
-}
-// Ghi lên Firebase
-// Lắng nghe thay đổi
-db.ref("members").on("value", snapshot => {
-  const data = snapshot.val();
-  if (data) {
-    members = data;
-    renderMembers(); // Gọi lại hàm hiển thị
-  }
-});
-
-renderMembers();
